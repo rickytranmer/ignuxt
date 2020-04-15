@@ -1,0 +1,17 @@
+// * MEDIA QUERIES *
+$breakpoints: (
+  small: 0, //px
+  medium: 568,
+  tablet: 768,
+  large: 1025,
+  xlarge: 1400,
+  xxlarge: 1920,
+);
+
+// * COLORS *
+$black: #000000;
+$white: #ffffff;
+
+// * DEFAULTS *
+$body-font-size: 16; //px
+$body-font-family: 'Verdana', Helvetica, Arial, sans-serif;

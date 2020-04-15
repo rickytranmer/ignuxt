@@ -1,0 +1,221 @@
+// * FUNCTIONS *
+@function rem-calc($px) {
+  @if type-of($px)==number and index('px', unit($px)) { 
+    $value: $px/(#{$body-font-size});
+    @return str-slice($value, 1, str-length($value)-2)+rem; 
+  }
+	@else { @return ($px/$body-font-size)+rem; }
+}
+
+
+// * MIXINS *
+@mixin breakpoint($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media print, screen and(min-width: rem-calc(map-get($breakpoints, $breakpoint))) {
+      @content;
+    }
+  }
+  @else {
+    @media print, screen and(min-width: rem-calc($breakpoint)) {
+      @content;
+    }
+  }
+}
+
+@mixin placeholder {
+	&::-webkit-input-placeholder { @content; }
+	&:-moz-placeholder { @content; }
+	&::-moz-placeholder { @content; }
+	&:-ms-input-placeholder { @content; }
+	&::placeholder { @content; opacity: 1; }
+}
+
+@mixin selection {
+	::-moz-selection { @content; }
+	::selection { @content; }
+}
+
+@mixin pos-abs($transform: false, $transformX:-50%, $transformY:-50%) {
+	position: absolute;
+	@if $transform { transform: translate($transformX, $transformY); }
+}
+
+@mixin bc($background, $color, $hover:false) {
+	background: $background;
+	color: $color;
+
+	@if $hover { &:hover {
+		background: $color;
+		color: $background;
+	} }
+}
+
+@mixin bgc($background, $color, $hover:false) {
+	background-color: $background;
+	color: $color;
+
+	@if $hover { &:hover {
+		background-color: $color;
+		color: $background;
+	} }
+}
+
+@mixin font-face($name, $file:$name, $weight:false, $style:normal) {
+	@font-face { font-family: '#{$name}';
+		src: url('../fonts/#{$file}.eot');
+		src: url('../fonts/#{$file}.eot?#iefix') format('embedded-opentype'), url('../fonts/#{$file}.woff') format('woff'), url('../fonts/#{$file}.ttf') format('truetype');
+		@if $weight { font-weight: $weight; }
+		font-style: $style;
+		font-display: swap;
+	}
+}
+@mixin font-face-woff($name, $file:$name, $weight:false, $style:normal) {
+	@font-face { font-family: '#{$name}';
+		src: url('../fonts/#{$file}.woff') format('woff');
+		@if $weight { font-weight: $weight; }
+		font-style: $style;
+		font-display: swap;
+	}
+}
+@mixin font-face-woff2($name, $file:$name, $weight:false, $style:normal) {
+	@font-face { font-family: '#{$name}';
+		src: url('../fonts/#{$file}.woff2') format('woff2');
+		@if $weight { font-weight: $weight; }
+		font-style: $style;
+		font-display: swap;
+	}
+}
+@mixin font-face-ttf($name, $file:$name, $weight:false, $style:normal) {
+	@font-face { font-family: '#{$name}';
+		src: url('../fonts/#{$file}.ttf') format('truetype');
+		@if $weight { font-weight: $weight; }
+		font-style: $style;
+		font-display: swap;
+	}
+}
+
+@mixin flex-row($justify:false, $align:false, $wrap:null) {
+	display: flex;
+	@if $justify { justify-content: $justify; }
+	@if $align { align-items: $align; }
+  flex-flow: row $wrap;
+}
+@mixin flex-col($justify:false, $align:false, $wrap:null) {
+	display: flex;
+	@if $justify { justify-content: $justify; }
+	@if $align { align-items: $align; }
+  flex-flow: column $wrap;
+}
+
+@mixin pseudo($content:"", $display:block, $pos:absolute){
+	content: $content;
+	display: $display;
+	position: $pos;
+}
+
+@mixin size($width, $height:$width) {
+	width: $width;
+	height: $height;
+}
+@mixin size-lh($width, $height:$width) {
+	width: $width;
+	height: $height;
+	line-height: $height;
+}
+@mixin min-size($min-width, $min-height:$min-width) {
+	min-width: $min-width;
+	min-height: $min-height;
+}
+@mixin max-size($max-width, $max-height:$max-width) {
+	max-width: $max-width;
+	max-height: $max-height;
+}
+
+@mixin retina {
+	@media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+	only screen and (-moz-min-device-pixel-ratio: 1.5),
+	only screen and (-o-min-device-pixel-ratio: 3 / 2),
+	only screen and (min-device-pixel-ratio: 1.5),
+	only screen and (min-resolution: 1.5dppx) { @content; }
+}
+
+@mixin truncate($boundary) {
+	max-width: $boundary;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+@mixin checkbox($color:#fff, $size:.75rem, $border:rem-calc(1)) {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	@include size($size);
+	border: $border solid $color;
+
+	&:checked {
+		background-color: $color;
+	}
+}
+
+// Play button over figure image w/ hover effect
+@mixin play-button($size:10rem, $circle-color:#000, $triangle-color:#fff, $transition:.25s ease ) {
+	@include pos-abs(calc(50% - #{$size/2}), calc(50% - #{$size/4}), false);
+	@include size($size);
+	background-color: $circle-color;
+	opacity: .25;
+	margin: auto;
+	border-radius: 50%;
+	transition: $transition background-color, $transition opacity;
+	
+	@at-root figure { // video container
+		cursor: pointer;
+		position: relative;
+		&:hover .play, &:hover .play::after { opacity: 1; }
+	}
+	
+	&::after {
+		@include pseudo();
+		@include size(0);
+		margin: 0 auto;
+		top: 25%;
+		left: calc(100%*1/3);
+		border-style: solid;
+		border-width: #{$size/4} 0 #{$size/4} #{$size/2};
+		border-color: transparent transparent transparent $triangle-color;
+		opacity: .75;
+		transition: $transition opacity;
+	}
+}
+
+@mixin color-bullet($color:#000, $width:1rem, $margin-left:-1rem, $font-weight:false) {
+	list-style: none;
+
+	li::before {
+		content: '\2022';
+		display: inline-block;
+		color: $color;
+		width: $width;
+		margin-left: $margin-left;
+		font-size: 1.25em;
+		line-height: 1em;
+		transform: translateY(6.25%);
+		@if $font-weight { font-weight: $font-weight; }
+	}
+}
+
+// - Font Size & Line Height (rem)
+@mixin fs-lh($font-size, $line-height:null, $calc-lh:false) {
+  font-size: rem-calc($font-size);
+	@if $line-height and $calc-lh==false { line-height: rem-calc($line-height); }
+	@else if $calc-lh!=false { line-height: #{$font-size/16*$line-height}rem; }
+  @else { line-height: 1; }
+}
+
+@mixin default-scheme($bgColor, $txtColor, $alt:dark, $bgColorAlt:$txtColor, $txtColorAlt:$bgColor) {
+  --bgColor: #{$bgColor};
+  --txtColor: #{$txtColor};
+  @media (prefers-color-scheme: $alt) {
+    --bgColor: #{$bgColorAlt};
+    --txtColor: #{$txtColorAlt};
+  }
+}
