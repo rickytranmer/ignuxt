@@ -1,5 +1,12 @@
 'use strict'
-const app = require('express')()
+
+try {
+  require('child_process').execSync('npm run build:nuxt')
+} catch (err) {
+  console.error(err)
+}
+
+const server = require('express')()
 const helmet = require('helmet')
 const { loadNuxt, build } = require('nuxt')
 const HOST = process.env.HOST || '0.0.0.0'
@@ -11,13 +18,12 @@ if (!MODE || MODE === 'development') {
   process.exit(9)
 }
 
-app.use(helmet())
+server.use(helmet())
 
 ;(async()=> {
-  await require('child_process').execSync('npm run build:nuxt')
   const nuxt = await loadNuxt(MODE === 'production' ? 'start' : 'dev')
 
-  app.use(nuxt.render)
+  server.use(nuxt.render)
 
   if (MODE === 'test') {
     process.env.DEBUG = 'nuxt:*'
@@ -25,5 +31,5 @@ app.use(helmet())
   }
 
   console.log(`${MODE}: listening - ${HOST}:${PORT}`)
-  app.listen(PORT, HOST)
+  server.listen(PORT, HOST)
 })()
