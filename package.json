@@ -55,7 +55,7 @@
     "gulp-replace": "^1.0.0",
     "jsmin": "^1.0.1",
     "mocha": "^7.0.1",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "node-zopfli-es": "^1.0.4",
     "pug": "^2.0.3",
     "pug-plain-loader": "^1.0.0",
